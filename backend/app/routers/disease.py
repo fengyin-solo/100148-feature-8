@@ -1,18 +1,18 @@
-"""病害登记接口：维护病害记录，覆盖确认定级、提交闭环、挂起病害等动作。"""
+"""病害登记接口：维护病害记录，覆盖确认定级、批量定级、提交闭环、挂起病害等动作。"""
 from __future__ import annotations
 
 from typing import Any
 
 from fastapi import APIRouter, HTTPException, Query
 
-from app.schemas import ActionResult, EntryPayload, PageResult
+from app.schemas import ActionResult, BatchGradePayload, BatchGradeResult, EntryPayload, PageResult
 from app.services.disease import DiseaseService
 
 router = APIRouter(prefix="/api/disease", tags=["病害登记"])
 
 service = DiseaseService()
 
-LIST_FIELDS = ["病害编号", "所在设施", "病害类型", "病害位置", "严重等级", "发现日期", "登记人员", "病害状态"]
+LIST_FIELDS = ["病害编号", "所在设施", "病害类型", "病害位置", "严重等级", "定级结论", "发现日期", "登记人员", "病害状态"]
 STATUSES = ["待定级", "已定级", "处置中", "已闭环", "已挂起"]
 
 
@@ -46,6 +46,15 @@ def create_entry(payload: EntryPayload) -> ActionResult:
     if missing:
         return ActionResult(ok=False, message=f"缺少必填字段：{'、'.join(missing)}")
     return ActionResult(ok=True, message="病害记录已登记", entry=entry)
+
+
+@router.post("/batch-grade", response_model=BatchGradeResult)
+def batch_grade(payload: BatchGradePayload) -> BatchGradeResult:
+    """一次提交给多条病害定级：逐条回执已定级或被退回；同一批次号重复提交不产生重复记录。"""
+    result, message = service.batch_grade(payload.batch_no, payload.items)
+    if result is None:
+        return BatchGradeResult(ok=False, message=message, batch_no=payload.batch_no)
+    return BatchGradeResult(ok=True, message=message, batch_no=result["batch_no"], receipts=result["receipts"])
 
 
 @router.post("/{entry_id}/actions", response_model=ActionResult)

@@ -28,6 +28,22 @@ class EntryPayload(BaseModel):
     remark: str | None = None
 
 
+class BatchGradePayload(BaseModel):
+    """批量定级提交：批次号用于幂等去重，items 逐条携带 entry_id、严重等级、定级结论。"""
+
+    batch_no: str = ""
+    items: list[dict[str, Any]] = Field(default_factory=list)
+
+
+class BatchGradeResult(BaseModel):
+    """批量定级回执：逐条给出已定级或被退回，被退回的说明哪一项不合格。"""
+
+    ok: bool
+    message: str
+    batch_no: str = ""
+    receipts: list[dict[str, Any]] = Field(default_factory=list)
+
+
 
 class RoadEntry(BaseModel):
     """道路设施明细结构。"""

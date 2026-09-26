@@ -33,3 +33,15 @@ body { margin: 0; background: #f6f8fb; color: #1f2937; }
 .link { border: none; background: none; color: var(--brand); cursor: pointer; padding: 0; }
 .page-foot { display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; color: var(--muted); }
 .error-text { color: #b42318; }
+.batch-panel, .receipt-panel { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 12px; }
+.batch-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
+.batch-no { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+.batch-no input { width: 220px; }
+.batch-fill { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; flex-wrap: wrap; }
+.batch-fill input, .batch-fill select, .batch-panel td input, .batch-panel td select { padding: 5px 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; }
+.receipt-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+.receipt-list li { display: flex; align-items: center; gap: 8px; }
+.receipt-code { font-weight: 600; }
+.tag { border-radius: 4px; padding: 1px 8px; font-size: 12px; }
+.tag-ok { background: #e7f6ec; color: #137333; }
+.tag-reject { background: #fdeceb; color: #b42318; }
