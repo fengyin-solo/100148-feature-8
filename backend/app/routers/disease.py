@@ -5,7 +5,7 @@ from typing import Any
 
 from fastapi import APIRouter, HTTPException, Query
 
-from app.schemas import ActionResult, EntryPayload, PageResult
+from app.schemas import ActionResult, BatchGradePayload, BatchGradeResult, EntryPayload, PageResult
 from app.services.disease import DiseaseService
 
 router = APIRouter(prefix="/api/disease", tags=["病害登记"])
@@ -46,6 +46,13 @@ def create_entry(payload: EntryPayload) -> ActionResult:
     if missing:
         return ActionResult(ok=False, message=f"缺少必填字段：{'、'.join(missing)}")
     return ActionResult(ok=True, message="病害记录已登记", entry=entry)
+
+
+@router.post("/batch-grade", response_model=BatchGradeResult)
+def batch_grade(payload: BatchGradePayload) -> BatchGradeResult:
+    """一次提交给多条病害定级：逐条回执已定级或已退回；同一批次号重复提交不会产生重复记录。"""
+    result = service.batch_grade(payload.batch_no, [item.model_dump() for item in payload.items])
+    return BatchGradeResult(**result)
 
 
 @router.post("/{entry_id}/actions", response_model=ActionResult)

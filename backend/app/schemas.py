@@ -28,6 +28,42 @@ class EntryPayload(BaseModel):
     remark: str | None = None
 
 
+class BatchGradeItem(BaseModel):
+    """批量定级里一条病害的定级内容：按 id 定位，附带统一的严重等级与定级结论。"""
+
+    entry_id: int | None = None
+    病害编号: str | None = None
+    严重等级: str | None = None
+    定级结论: str | None = None
+
+
+class BatchGradePayload(BaseModel):
+    """一次批量定级提交：同一批次号重复提交不会产生重复定级记录。"""
+
+    batch_no: str
+    items: list[BatchGradeItem] = Field(default_factory=list)
+
+
+class GradeReceipt(BaseModel):
+    """单条病害的定级回执：已定级或已退回；退回时用「不合格项」指明卡在哪一项。"""
+
+    entry_id: int | None = None
+    病害编号: str | None = None
+    result: str  # 已定级 / 已退回
+    不合格项: str | None = None
+    message: str
+
+
+class BatchGradeResult(BaseModel):
+    """批量定级整体结果：逐条回执，互不影响；duplicated 标记该批次号此前已处理过。"""
+
+    ok: bool
+    message: str
+    batch_no: str
+    duplicated: bool = False
+    receipts: list[GradeReceipt] = Field(default_factory=list)
+
+
 
 class RoadEntry(BaseModel):
     """道路设施明细结构。"""
